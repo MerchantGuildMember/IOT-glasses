@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Smart Glasses - Login</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <form class="login panel" method="post" action="/login">
+    <h1>Smart Glasses</h1>
+    {% if error %}<p class="error">{{ error }}</p>{% endif %}
+    <input name="username" placeholder="Username" autocomplete="username" required>
+    <input name="password" type="password" placeholder="Password" autocomplete="current-password" required>
+    <button type="submit">Log in</button>
+  </form>
+</body>
+</html>

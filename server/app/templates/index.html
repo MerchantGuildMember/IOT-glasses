@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Smart Glasses</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <header>
+    <h1>Smart Glasses</h1>
+    <span>{{ user }} · <a href="/logout">Log out</a></span>
+  </header>
+  <main>
+    <section class="panel">
+      <h2>Current image</h2>
+      <img id="currentImage" alt="Latest photo from the glasses">
+      <p id="noImage">No photo yet. Press capture on the Pi.</p>
+    </section>
+    <section class="panel">
+      <h2>Status</h2>
+      <div id="status">Waiting for a photo</div>
+    </section>
+    <section class="panel">
+      <h2>Description</h2>
+      <textarea id="description" readonly></textarea>
+    </section>
+  </main>
+  <script>
+    const img = document.getElementById("currentImage");
+    const noImage = document.getElementById("noImage");
+    const statusEl = document.getElementById("status");
+    const descEl = document.getElementById("description");
+    let shownVersion = 0;
+
+    function statusClass(status) {
+      if (status.startsWith("LLM error")) return "bad";
+      if (status === "Done" || status.startsWith("Image received")) return "ok";
+      if (status.endsWith("...")) return "busy";
+      return "";
+    }
+
+    async function refresh() {
+      try {
+        const res = await fetch("/api/state", { cache: "no-store" });
+        if (res.status === 401) { window.location = "/login"; return; }
+        const state = await res.json();
+        statusEl.textContent = state.status;
+        statusEl.className = statusClass(state.status);
+        descEl.value = state.description;
+        if (state.image_version !== shownVersion) {
+          shownVersion = state.image_version;
+          img.src = "/api/image?v=" + shownVersion;
+          img.style.display = "block";
+          noImage.style.display = "none";
+        }
+      } catch (err) {
+        statusEl.textContent = "Can't reach the server";
+        statusEl.className = "bad";
+      }
+    }
+    refresh();
+    setInterval(refresh, 1000);
+  </script>
+</body>
+</html>
