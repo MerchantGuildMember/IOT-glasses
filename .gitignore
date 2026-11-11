@@ -1,0 +1,17 @@
+# Secrets: never commit these (a leaked key is an automatic zero)
+.env
+*.env
+!.env.example
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Runtime data (captured images)
+server/data/
+pi/captures/
+
+# IDE
+.idea/workspace.xml
